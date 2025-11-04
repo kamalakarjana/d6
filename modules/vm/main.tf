@@ -3,7 +3,7 @@ resource "azurerm_public_ip" "vm" {
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
-  sku                 = var.public_ip_sku
+  sku                 = "Standard"
 
   tags = {
     environment = "production"
@@ -119,12 +119,5 @@ resource "azurerm_linux_virtual_machine" "vm" {
     environment = "production"
     project     = "docker-nginx"
     region      = "africa"
-  }
-
-  # Allow the VM to be created even if the specific size is not available
-  lifecycle {
-    ignore_changes = [
-      size
-    ]
   }
 }

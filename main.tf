@@ -59,5 +59,4 @@ module "vm_instance" {
   allowed_ssh_cidr      = var.allowed_ssh_cidr
   install_docker        = var.install_docker
   install_nginx         = var.install_nginx
-  public_ip_sku         = var.public_ip_sku
 }

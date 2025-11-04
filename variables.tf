@@ -31,7 +31,6 @@ variable "admin_username" {
 variable "ssh_public_key" {
   description = "SSH public key for VM authentication"
   type        = string
-  default     = ""
 }
 
 variable "allowed_ssh_cidr" {
@@ -50,17 +49,4 @@ variable "install_nginx" {
   description = "Whether to install Nginx on the VM"
   type        = bool
   default     = true
-}
-
-variable "public_ip_sku" {
-  description = "SKU for the Public IP (Basic or Standard)"
-  type        = string
-  default     = "Standard"
-}
-
-# Alternative VM sizes in case B1s is not available
-variable "alternative_vm_sizes" {
-  description = "List of alternative VM sizes to try"
-  type        = list(string)
-  default     = ["Standard_B1s", "Standard_B1ms", "Standard_A1_v2", "Standard_A2_v2"]
 }
