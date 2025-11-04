@@ -16,7 +16,6 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
       - name: Checkout code
@@ -28,20 +27,18 @@ jobs:
           terraform_version: 1.5.0
 
       - name: Terraform Format
-        id: fmt
-        run: terraform fmt -check
+        run: terraform fmt -recursive
 
       - name: Terraform Init
-        id: init
         run: terraform init
 
       - name: Terraform Validate
-        id: validate
         run: terraform validate
 
       - name: Terraform Plan
-        id: plan
-        run: terraform plan -var-file=terraform.tfvars -out=plan.tfplan
+        run: terraform plan -var="ssh_public_key=$SSH_PUBLIC_KEY" -out=plan.tfplan
+        env:
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -49,5 +46,5 @@ jobs:
 
       - name: Output VM Details
         run: |
-          echo "VM Public IP: $(terraform output -raw vm_public_ip)"
-          echo "SSH Command: $(terraform output -raw ssh_connection_command)"
+          echo "VM Public IP: $(terraform output -raw vm_public_ip || echo 'Not available')"
+          echo "SSH Command: $(terraform output -raw ssh_connection_command || echo 'Not available')"

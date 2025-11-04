@@ -31,6 +31,7 @@ variable "admin_username" {
 variable "ssh_public_key" {
   description = "SSH public key for VM authentication"
   type        = string
+  default     = ""  # This will be set via environment variable
 }
 
 variable "allowed_ssh_cidr" {

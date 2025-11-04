@@ -110,7 +110,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 
-  custom_data = base64encode(file("${path.module}/../../scripts/user-data.sh"))
+  custom_data = base64encode(file("${path.root}/scripts/user-data.sh"))
 
   tags = {
     environment = "production"
