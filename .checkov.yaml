@@ -1,0 +1,10 @@
+soft-fail: true
+compact: true
+quiet: true
+framework:
+  - terraform
+skip-check:
+  - CKV_AZURE_1  # Ensure Azure Instance does not use basic authentication
+  - CKV_AZURE_50  # Ensure that Azure Linux VM does not allow password authentication
+output: cli
+bc_api_key: ${BC_API_KEY}

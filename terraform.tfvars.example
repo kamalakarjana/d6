@@ -1,0 +1,10 @@
+location = "East US"
+resource_group_name = "docker-nginx-rg"
+vm_name = "docker-nginx-vm"
+vm_size = "Standard_B1s"
+admin_username = "azureuser"
+ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+subnet_id = "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/virtualNetworks/xxx/subnets/xxx"
+allowed_ssh_cidr = "0.0.0.0/0"
+install_docker = true
+install_nginx = true
