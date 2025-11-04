@@ -1,4 +1,4 @@
-name: 'Terraform Azure VM Deployment'
+name: 'Terraform Azure VM Deployment - Africa'
 
 on:
   push:
@@ -14,8 +14,13 @@ env:
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: 'Terraform Africa Deployment'
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        region: ["South Africa North", "South Africa West"]
+      max-parallel: 1
 
     steps:
       - name: Checkout code
@@ -36,7 +41,7 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -var="ssh_public_key=$SSH_PUBLIC_KEY" -out=plan.tfplan
+        run: terraform plan -var="ssh_public_key=$SSH_PUBLIC_KEY" -var="location=${{ matrix.region }}" -out=plan.tfplan
         env:
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
 
@@ -46,5 +51,16 @@ jobs:
 
       - name: Output VM Details
         run: |
+          echo "Region: ${{ matrix.region }}"
           echo "VM Public IP: $(terraform output -raw vm_public_ip || echo 'Not available')"
           echo "SSH Command: $(terraform output -raw ssh_connection_command || echo 'Not available')"
+          echo "Resource Group: $(terraform output -raw resource_group_name || echo 'Not available')"
+
+      - name: Upload Terraform Outputs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-outputs-${{ matrix.region }}
+          path: |
+            plan.tfplan
+          retention-days: 1

@@ -22,3 +22,13 @@ output "virtual_network_name" {
   description = "Virtual network name"
   value       = azurerm_virtual_network.main.name
 }
+
+output "region" {
+  description = "Azure region where resources are deployed"
+  value       = azurerm_resource_group.main.location
+}
+
+output "deployment_url" {
+  description = "URL to access the deployed application"
+  value       = "http://${module.vm_instance.vm_public_ip}"
+}

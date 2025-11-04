@@ -2,12 +2,13 @@ resource "azurerm_public_ip" "vm" {
   name                = "${var.vm_name}-pip"
   location            = var.location
   resource_group_name = var.resource_group_name
-  allocation_method   = "Dynamic"
-  sku                 = "Basic"
+  allocation_method   = "Static"
+  sku                 = var.public_ip_sku
 
   tags = {
     environment = "production"
     project     = "docker-nginx"
+    region      = "africa"
   }
 }
 
@@ -55,6 +56,7 @@ resource "azurerm_network_security_group" "vm" {
   tags = {
     environment = "production"
     project     = "docker-nginx"
+    region      = "africa"
   }
 }
 
@@ -73,6 +75,7 @@ resource "azurerm_network_interface" "vm" {
   tags = {
     environment = "production"
     project     = "docker-nginx"
+    region      = "africa"
   }
 }
 
@@ -110,10 +113,18 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 
-  custom_data = base64encode(file("${path.root}/scripts/user-data.sh"))
+  custom_data = filebase64("${path.root}/scripts/user-data.sh")
 
   tags = {
     environment = "production"
     project     = "docker-nginx"
+    region      = "africa"
+  }
+
+  # Allow the VM to be created even if the specific size is not available
+  lifecycle {
+    ignore_changes = [
+      size
+    ]
   }
 }
