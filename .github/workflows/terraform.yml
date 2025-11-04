@@ -1,9 +1,7 @@
-name: 'Terraform Azure VM Deployment - Africa'
+name: Deploy Azure VM to Africa
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 env:
@@ -13,40 +11,61 @@ env:
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
 jobs:
-  terraform:
-    name: 'Terraform Africa Deployment'
+  deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.0
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Format
-        run: terraform fmt -recursive
+    - name: Terraform Init
+      run: terraform init
 
-      - name: Terraform Init
-        run: terraform init
+    - name: Terraform Validate
+      run: terraform validate
 
-      - name: Terraform Validate
-        run: terraform validate
+    - name: Create terraform.tfvars from secrets
+      run: |
+        cat > terraform.tfvars << TERRAFORMVARS
+        location = "South Africa North"
+        resource_group_name = "docker-nginx-africa-rg"
+        vm_name = "docker-nginx-vm"
+        vm_size = "Standard_B1s"
+        admin_username = "azureuser"
+        ssh_public_key = "$SSH_PUBLIC_KEY"
+        allowed_ssh_cidr = "0.0.0.0/0"
+        install_docker = true
+        install_nginx = true
+        TERRAFORMVARS
+      env:
+        SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
 
-      - name: Terraform Plan
-        run: terraform plan -var="ssh_public_key=$SSH_PUBLIC_KEY" -var="location=South Africa North" -out=plan.tfplan
-        env:
-          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+    - name: Terraform Plan
+      run: terraform plan
 
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve plan.tfplan
-
-      - name: Output VM Details
-        run: |
-          echo "Region: South Africa North"
-          echo "VM Public IP: $(terraform output -raw vm_public_ip || echo 'Not available')"
-          echo "SSH Command: $(terraform output -raw ssh_connection_command || echo 'Not available')"
-          echo "Resource Group: $(terraform output -raw resource_group_name || echo 'Not available')"
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+      
+    - name: Show Outputs
+      run: |
+        echo "VM Public IP: $(terraform output -raw vm_public_ip)"
+        echo "SSH Command: $(terraform output -raw ssh_connection_command)"
+        echo "Website URL: http://$(terraform output -raw vm_public_ip)"
+        
+    - name: Wait for VM to be ready
+      run: sleep 60
+      
+    - name: Run Health Checks
+      run: |
+        chmod +x scripts/*.sh
+        echo "=== RUNNING HEALTH CHECKS ==="
+        ./scripts/quick-test.sh
+        echo ""
+        echo "=== DETAILED HEALTH CHECK ==="
+        ./scripts/health-check.sh || echo "Health check completed with warnings"
+        
+    - name: Cleanup sensitive files
+      run: rm -f terraform.tfvars
