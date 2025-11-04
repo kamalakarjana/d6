@@ -15,5 +15,10 @@ output "ssh_connection_command" {
 
 output "resource_group_name" {
   description = "Resource group name"
-  value       = module.vm_instance.resource_group_name
+  value       = azurerm_resource_group.main.name
+}
+
+output "virtual_network_name" {
+  description = "Virtual network name"
+  value       = azurerm_virtual_network.main.name
 }

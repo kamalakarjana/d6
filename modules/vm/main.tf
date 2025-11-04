@@ -7,6 +7,7 @@ resource "azurerm_public_ip" "vm" {
 
   tags = {
     environment = "production"
+    project     = "docker-nginx"
   }
 }
 
@@ -53,6 +54,7 @@ resource "azurerm_network_security_group" "vm" {
 
   tags = {
     environment = "production"
+    project     = "docker-nginx"
   }
 }
 
@@ -70,6 +72,7 @@ resource "azurerm_network_interface" "vm" {
 
   tags = {
     environment = "production"
+    project     = "docker-nginx"
   }
 }
 
@@ -107,12 +110,10 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 
-  custom_data = base64encode(templatefile("${path.module}/../../scripts/user-data.sh", {
-    install_docker = var.install_docker
-    install_nginx  = var.install_nginx
-  }))
+  custom_data = base64encode(file("${path.module}/../../scripts/user-data.sh"))
 
   tags = {
     environment = "production"
+    project     = "docker-nginx"
   }
 }

@@ -33,11 +33,6 @@ variable "ssh_public_key" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "Subnet ID where the VM will be launched"
-  type        = string
-}
-
 variable "allowed_ssh_cidr" {
   description = "CIDR block allowed to SSH to the VM"
   type        = string
