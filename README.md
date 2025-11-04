@@ -1,5 +1,6 @@
 # Azure VM with Docker and Nginx - Terraform
 
+
 This project automates the deployment of an Azure VM with Docker and Nginx using Terraform and GitHub Actions.
 
 ## Prerequisites
